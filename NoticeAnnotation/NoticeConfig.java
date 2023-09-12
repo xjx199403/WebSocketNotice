@@ -48,19 +48,19 @@ public class NoticeConfig {
 	
 	@Autowired
 	private WebSocketServer webSocketServer;
-	
+	// 策略选择接口
 	@Autowired
 	private NoticeChooser noticeChooser;
 	
-    @Autowired
-    private WeixinCpService weixinCpService;
-    
-    @Autowired
-    private UserInfoService userInfoService;
+	@Autowired
+	private WeixinCpService weixinCpService;
+	    
+	@Autowired
+	private UserInfoService userInfoService;
 	
 	@Pointcut("@annotation(com.tongdatech.winterspring.zczx.webSocketConfig.NoticeAnnotation.Notice)" )
 	public void noticeConfig() {
-    }
+   	}
     
 	@AfterReturning(pointcut = "noticeConfig()", returning = "returnObject")
 	public void doNotice(JoinPoint joinPoint,Object returnObject) throws IOException{
@@ -68,7 +68,7 @@ public class NoticeConfig {
         Object[] args = joinPoint.getArgs();
         Notice noticeAnnotation = method.getAnnotation(Notice.class);
         /**
-         * 判断是否发送通知
+         * 判断是否开启发送通知
          */
         if(!noticeAnnotation.condition().equals("")) {
         	if(!generateKeyBySpEL(noticeAnnotation.condition(),joinPoint,Boolean.class)) {
@@ -88,15 +88,17 @@ public class NoticeConfig {
         	webSocketServer.sendOneMessage(receiver,JSON.toJSONString(noticeMsg));
         	return;
         }
-        /**
+       	/**
          * 复杂模式发送
+　　　　　　　根据不同的operateType 调用不同的实现类
+　　　　　　　我们给IHandleNotice接口中，传入我们在@Notice注解的方法中获取到的参数和返回值，并获取它返回的 Map<接收人，消息>
          */
         IHandleNotice iHandleNotice = noticeChooser.choose(noticeAnnotation.operateType().toString());
-	    Map<String, NoticeMsg> receiversAndMsgs = iHandleNotice.handleNotice(getUserId(), args, returnObject);
-        for (Map.Entry<String, NoticeMsg> entry : receiversAndMsgs.entrySet()) {
-        	String jsonMsg = JSON.toJSONString(entry.getValue());
-        	webSocketServer.sendOneMessage(entry.getKey(),jsonMsg);
-        }
+	   	 Map<String, NoticeMsg> receiversAndMsgs = iHandleNotice.handleNotice(getUserId(), args, returnObject);
+		for (Map.Entry<String, NoticeMsg> entry : receiversAndMsgs.entrySet()) {
+			String jsonMsg = JSON.toJSONString(entry.getValue());
+			webSocketServer.sendOneMessage(entry.getKey(),jsonMsg);
+		}
 	}
 	
 	
