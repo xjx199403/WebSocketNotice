@@ -93,7 +93,7 @@ public class NoticeConfig {
 　　　　　　　根据不同的operateType 调用不同的实现类
 　　　　　　　我们给IHandleNotice接口中，传入我们在@Notice注解的方法中获取到的参数和返回值，并获取它返回的 Map<接收人，消息>
          */
-        IHandleNotice iHandleNotice = noticeChooser.choose(noticeAnnotation.operateType().toString());
+        IHandleNotice iHandleNotice = noticeChooser.choose(noticeAnnotation.operateType());
 	   	 Map<String, NoticeMsg> receiversAndMsgs = iHandleNotice.handleNotice(getUserId(), args, returnObject);
 		for (Map.Entry<String, NoticeMsg> entry : receiversAndMsgs.entrySet()) {
 			String jsonMsg = JSON.toJSONString(entry.getValue());
