@@ -34,7 +34,6 @@ public class WebSocketServer {
     @OnOpen
     public void onOpen(Session session, @PathParam(value="userName")String userName) {
         sessionPool.put(userName, session);
-        System.out.println(userName+"【websocket消息】有新的连接，总数为:"+sessionPool.size());
         
     }
     
@@ -44,12 +43,11 @@ public class WebSocketServer {
     @OnClose
     public void onClose(@PathParam(value = "userName") String userName) {
     	sessionPool.remove(userName);
-        System.out.println(userName+"【websocket消息】连接断开，总数为:"+sessionPool.size());
     }
     
     @OnMessage
     public void onMessage(String message) {
-        System.out.println("【websocket消息】收到客户端消息:"+message);
+            
     }
     
     //发送消息
