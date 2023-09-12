@@ -27,7 +27,7 @@ public class NoticeChooser implements ApplicationContextAware{
 	private Map<NoticeType, IHandleNotice> noticeMap = new ConcurrentHashMap<>();
 	
 	
-	//成员变量来接收容器
+	// 存放策略的容器
 	private ApplicationContext applicationContext;
 	
 	
